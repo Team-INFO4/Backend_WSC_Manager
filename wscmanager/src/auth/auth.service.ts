@@ -13,11 +13,12 @@ export class AuthService {
     ) {}
     async signup(data : SignupDto) {
         const { id, password, key } = data;
+        console.log(id,password);
         if (id.indexOf(' ') !== -1 || password.indexOf(' ') !== -1 || key !== process.env.SIGNUPKEY) {
             throw new BadRequestException();
         }
         const isExist = await this.userRepo.findOne({
-            id: data.id
+            userid: data.id
         });
         if (isExist) {
             throw new ForbiddenException({
@@ -28,7 +29,7 @@ export class AuthService {
         try {
             const hashedpassword = await hash(password, 10);
             await this.userRepo.save({
-                id: id,
+                userid: id,
                 password: hashedpassword
             })
         } catch (error) {

@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { User } from './entity/user.entity';
-
+import { DataModule } from './data/data.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { User } from './entity/user.entity';
       ],
       synchronize: true,
       logging: false
-    }), AuthModule],
+    }), AuthModule, DataModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DataService } from './data.service';
 import { DataController } from './data.controller';
 import { ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from 'src/middleware/jwt.strategy';
 
 @Module({
   imports: [
@@ -9,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true
     })
   ],
-  providers: [DataService],
+  providers: [DataService, JwtStrategy],
   controllers: [DataController]
 })
 export class DataModule {}

@@ -4,9 +4,15 @@
   "description": "nodejs-express",
   "main": "app.js",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   }
 }

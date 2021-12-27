@@ -1,2 +1,3 @@
 .vscode
 wscmanager/node_modules/
+wscmanager/.env

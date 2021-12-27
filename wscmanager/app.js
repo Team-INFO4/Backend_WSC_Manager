@@ -1,11 +1,10 @@
-const express = require('express');
-const logger = require('morgan');
+import express from "express";
+import config from './config/index.js';
 
 const app = express();
-const port = 3000;
 
-app.use(logger());
-
-app.listen(port, () => {
-    console.log('WSCmanager listening at port 3000');
+const server = app.listen(config.port, () => {
+    console.log('WSC manager start at ', config.port);
 })
+
+export { server }

@@ -1,5 +1,5 @@
-import logger from 'morgan';
+import expressLoader from "./express"
 
 export default (app) => {
-    app.use(logger());
+    expressLoader(app);
 }

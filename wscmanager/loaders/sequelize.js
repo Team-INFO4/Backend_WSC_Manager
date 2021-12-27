@@ -9,6 +9,4 @@ const seqerlize = new Sequelize(config.database, config.username, config.passwor
 
 db.sequelize = seqerlize;
 
-export default {
-    db
-}
+export default db;

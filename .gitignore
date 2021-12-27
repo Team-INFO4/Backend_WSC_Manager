@@ -1,3 +1,4 @@
 .vscode
-wscmanager/node_modules/
+wscmanager/node_modules
 wscmanager/.env
+wscmanager/config/dbconfig.json

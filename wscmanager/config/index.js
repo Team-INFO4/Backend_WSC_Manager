@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import dbconfig from './dbconfig.json';
 
 const envFound = dotenv.config();
 if (envFound.error) {
@@ -6,5 +7,6 @@ if (envFound.error) {
 }
 
 export default {
-    port : parseInt(process.env.PORT, 10)
+    port : parseInt(process.env.PORT, 10),
+    dbconfig : dbconfig
 }

@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	eng := gin.Default()
+	engine := gin.Default()
 
-	eng.Use(wsc_middleware.Middleware()) // 미들웨어
-	wsc_apis.APIs(eng)                   // APIs
+	engine.Use(wsc_middleware.Middleware()) // 미들웨어
+	wsc_apis.APIs(engine)                   // APIs
 
-	eng.Run(":3111")
+	engine.Run(":65530")
 }

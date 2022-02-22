@@ -1,0 +1,1 @@
+package wsc_static

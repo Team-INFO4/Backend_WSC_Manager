@@ -1,4 +1,4 @@
-package wsc_jsonstruct
+package wsc_apis
 
 type Loginjson struct {
 	Id       string `json:"id"`

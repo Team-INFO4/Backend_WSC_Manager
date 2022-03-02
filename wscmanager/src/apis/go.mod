@@ -1,3 +1,3 @@
 module wsc_apis
 
-go 1.13
+go 1.17

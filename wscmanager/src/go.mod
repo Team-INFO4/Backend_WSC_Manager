@@ -9,8 +9,15 @@ require (
 )
 
 replace (
+<<<<<<< HEAD
 	wscmanager.com/apis v0.0.0 => ./apis
 	wscmanager.com/jsonstructs v0.0.0 => ./json
 	wscmanager.com/middleware v0.0.0 => ./middleware
 	wscmanager.com/staticfiles v0.0.0 => ./static
 )
+=======
+	wscmanager.com/apis v0.0.0 			=> ./apis
+	wscmanager.com/middleware v0.0.0 	=> ./middleware
+	wscmanager.com/staticfiles v0.0.0 	=> ./static
+)
+>>>>>>> develop

@@ -80,15 +80,24 @@ func NotionCrawl(c *gin.Context) {
 	startTime, _ := time.Parse("2006-01-02", Crawljson.StartDate)
 	EndTime, _ := time.Parse("2006-01-02", Crawljson.EndDate)
 
-	for i := 0; i < length; i++ { // [TODO]: JSON 값 유효한지 체크하는 함수 찾기
-		if Crawljson.Target != data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Target"].(map[string]interface{})["select"].(map[string]interface{})["name"].(string) {
+	for i := 0; i < length; i++ {
+		targetdata, targetkeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Target"].(map[string]interface{})["select"].(map[string]interface{})["name"]
+		titledata, titlekeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})[0].(map[string]interface{})["plain_text"]
+		datedata, datekeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["FindDate"].(map[string]interface{})["date"].(map[string]interface{})["start"]
+		humandata, humankeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Human"].(map[string]interface{})["people"].([]interface{})[0].(map[string]interface{})["name"]
+
+		if !(targetkeycheck && titlekeycheck && datekeycheck && humankeycheck) {
+			continue
+		}
+
+		if Crawljson.Target != targetdata.(string) {
 			continue
 		}
 
 		var resultdata = gin.H{
-			"title": data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})[0].(map[string]interface{})["plain_text"].(string),
-			"date":  data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["FindDate"].(map[string]interface{})["date"].(map[string]interface{})["start"].(string),
-			"human": data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Human"].(map[string]interface{})["people"].([]interface{})[0].(map[string]interface{})["name"].(string),
+			"title": titledata.(string),
+			"date":  datedata.(string),
+			"human": humandata.(string),
 		}
 
 		dataDate, _ := time.Parse("2006-01-02", resultdata["date"].(string))

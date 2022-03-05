@@ -81,29 +81,46 @@ func NotionCrawl(c *gin.Context) {
 	EndTime, _ := time.Parse("2006-01-02", Crawljson.EndDate)
 
 	for i := 0; i < length; i++ {
-		targetdata, targetkeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Target"].(map[string]interface{})["select"].(map[string]interface{})["name"]
-		titledata, titlekeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})[0].(map[string]interface{})["plain_text"]
-		datedata, datekeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["FindDate"].(map[string]interface{})["date"].(map[string]interface{})["start"]
-		humandata, humankeycheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Human"].(map[string]interface{})["people"].([]interface{})[0].(map[string]interface{})["name"]
+		var resultdata = make(gin.H, 3)
 
-		if !(targetkeycheck && titlekeycheck && datekeycheck && humankeycheck) {
+		targetdata, targetnamecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Target"].(map[string]interface{})["select"].(map[string]interface{})
+		titledata, plaintextcheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})
+		datedata, startcheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["FindDate"].(map[string]interface{})["date"].(map[string]interface{})
+		humandata, humannamecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Human"].(map[string]interface{})["people"].([]interface{})
+		typedata, typecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Type"].(map[string]interface{})["select"].(map[string]interface{})
+
+		if !(targetnamecheck && plaintextcheck && startcheck && humannamecheck) {
 			continue
 		}
 
-		if Crawljson.Target != targetdata.(string) {
+		if Crawljson.Target != targetdata["name"].(string) {
 			continue
 		}
 
-		var resultdata = gin.H{
-			"title": titledata.(string),
-			"date":  datedata.(string),
-			"human": humandata.(string),
+		if Crawljson.Type != "" && typecheck { // 활성화되었을때
+			if Crawljson.Type != typedata["name"].(string) {
+				continue
+			}
 		}
 
-		dataDate, _ := time.Parse("2006-01-02", resultdata["date"].(string))
+		dataDate, _ := time.Parse("2006-01-02", datedata["start"].(string))
 
 		if startTime.After(dataDate) || EndTime.Before(dataDate) {
 			continue
+		} else {
+			resultdata["date"] = datedata["start"].(string)
+		}
+
+		if len(titledata) == 0 {
+			resultdata["title"] = nil
+		} else {
+			resultdata["title"] = titledata[0].(map[string]interface{})["plain_text"].(string)
+		}
+
+		if len(humandata) == 0 {
+			resultdata["human"] = nil
+		} else {
+			resultdata["human"] = humandata[0].(map[string]interface{})["name"].(string)
 		}
 
 		result = append(result, resultdata)

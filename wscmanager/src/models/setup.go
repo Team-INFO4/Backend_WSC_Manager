@@ -24,8 +24,7 @@ func ConnectDB() {
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
-
+	db.SingularTable(true)
 	DB = db
 
-	defer DB.Close()
 }

@@ -14,4 +14,6 @@ func main() {
 	wsc_apis.APIs(engine)                   // APIs
 
 	engine.Run(":65530")
+
+	defer wsc_models.DB.Close()
 }

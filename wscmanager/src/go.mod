@@ -6,7 +6,6 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	wscmanager.com/apis v0.0.0
 	wscmanager.com/middleware v0.0.0
-	wscmanager.com/jsonstructs v0.0.0
 )
 
 require (
@@ -24,11 +23,12 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/sys v0.0.0-20200116001909-b77594299b42 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	wscmanager.com/jsonstructs v0.0.0 // indirect
 )
 
 replace (
 	wscmanager.com/apis v0.0.0 => ./apis
+	wscmanager.com/jsonstructs v0.0.0 => ./json
 	wscmanager.com/middleware v0.0.0 => ./middleware
 	wscmanager.com/staticfiles v0.0.0 => ./static
-	wscmanager.com/jsonstructs v0.0.0 => ./json
 )

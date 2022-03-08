@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	wsc_jsonstructs "wscmanager.com/jsonstructs"
 )
 
 func SaveDB(c *gin.Context) {
@@ -17,7 +18,7 @@ func SaveDB(c *gin.Context) {
 		return
 	}
 
-	var Crawljson SaveDBjson
+	var Crawljson wsc_jsonstructs.SaveDBjson
 
 	binderr := c.BindJSON(&Crawljson)
 	if binderr != nil {

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	wsc_jsonstructs "wscmanager.com/jsonstructs"
 )
 
 func NotionCrawl(c *gin.Context) {
@@ -20,7 +21,7 @@ func NotionCrawl(c *gin.Context) {
 		return
 	}
 
-	var Crawljson NotionCrawljson
+	var Crawljson wsc_jsonstructs.NotionCrawljson
 
 	binderr := c.BindJSON(&Crawljson)
 	if binderr != nil {

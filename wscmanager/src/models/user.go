@@ -33,3 +33,7 @@ func (u *User) BeforeSave() error {
 	u.Password = string(hashedPassword)
 	return nil
 }
+
+func LoginCheck(id string, password string) (string, error) {
+
+}

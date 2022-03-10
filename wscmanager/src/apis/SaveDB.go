@@ -124,12 +124,10 @@ func SaveDB(c *gin.Context) {
 			sqlhumandata = humandata[0].(map[string]interface{})["name"].(string)
 		}
 
-		if typedata["name"].(string) != "Vulnability" {
-			continue
-		} else {
-			sqlvulnerabilitydata = vulnerabilitydata[0].(map[string]interface{})["name"].(string)
-		}
+		sqltypedata = typedata["name"].(string)
+		sqlvulnerabilitydata = vulnerabilitydata[0].(map[string]interface{})["name"].(string)
 
+		// [TODO] : sql 서버 쿼리 작업
 	}
 
 	c.Status(http.StatusOK)

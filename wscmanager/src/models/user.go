@@ -34,6 +34,18 @@ func (u *User) BeforeSave() error {
 	return nil
 }
 
+func VerifyPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
 func LoginCheck(id string, password string) (string, error) {
+	var err error
+
+	u := User{}
+	err = DB.Model(User{}).Where("Id = ?", id).Take(&u).Error
+
+	if err != nil {
+		return "", err
+	}
 
 }

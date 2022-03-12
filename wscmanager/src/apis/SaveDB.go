@@ -155,16 +155,43 @@ func SaveDB(c *gin.Context) {
 			return
 		}
 
-		pagedata := make(map[string]interface{})
+		pagemap := make(map[string]interface{})
 
-		pageapimarshalerr := json.Unmarshal(pageapibody, &pagedata)
+		pageapimarshalerr := json.Unmarshal(pageapibody, &pagemap)
 		if pageapimarshalerr != nil {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
 
-		// [TODO] : 문자열 이을때 개행문자 추가
+		pagelength := len(pagemap["results"].([]interface{}))
+		var referencebool bool = false
+		for j := 0; j < pagelength; j++ {
+			blocktype, blocktypecheck := pagemap["results"].([]interface{})[j].(map[string]interface{})["type"]
+			if !blocktypecheck {
+				c.Status(http.StatusInternalServerError)
+				return
+			}
 
+			pagedata, pagedatacheck := pagemap["results"].([]interface{})[j].(map[string]interface{})[blocktype.(string)].(map[string]interface{})["rich_text"].([]interface{})
+			if !pagedatacheck {
+				c.Status(http.StatusInternalServerError)
+				return
+			}
+
+			if len(pagedata) == 0 {
+				continue
+			}
+
+			if pagedata[0].(map[string]interface{})["plain_text"].(string) == "참고 자료" {
+				referencebool = true
+			}
+
+			if !referencebool {
+				sqldescription += pagedata[0].(map[string]interface{})["plain_text"].(string) + "\n"
+			} else {
+				sqlreference += pagedata[0].(map[string]interface{})["plain_text"].(string) + "\n"
+			}
+		}
 		// [TODO] : sql 서버 쿼리 작업
 
 	}

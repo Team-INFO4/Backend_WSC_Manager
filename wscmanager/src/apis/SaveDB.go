@@ -1,6 +1,7 @@
 package wsc_apis
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -193,7 +194,12 @@ func SaveDB(c *gin.Context) {
 			}
 		}
 		// [TODO] : sql 서버 쿼리 작업
-
+		db, dberr := sql.Open("mysql", "")
+		if dberr != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		defer db.Close()
 	}
 
 	c.Status(http.StatusOK)

@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
+	"wscmanager.com/utils/token"
 )
 
 type User struct {
@@ -54,4 +55,9 @@ func LoginCheck(id string, password string) (string, error) {
 		return "", err
 	}
 
+	token, err := token.CreateJWT(u.Id)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

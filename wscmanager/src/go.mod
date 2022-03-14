@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.7.7
+	github.com/joho/godotenv v1.4.0
 	wscmanager.com/apis v0.0.0
 	wscmanager.com/middleware v0.0.0
 	wscmanager.com/models v0.0.0
@@ -18,7 +19,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

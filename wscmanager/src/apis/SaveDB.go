@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	wsc_jsonstructs "wscmanager.com/jsonstructs"
 )
 
@@ -40,8 +42,9 @@ func SaveDB(c *gin.Context) {
 	}
 
 	url := "https://api.notion.com/v1/databases/12a67850f2c243bba567110741f39ef7/query"
+	payload := strings.NewReader("{\"page_size\":100,\"filter\":{\"or\":[{\"property\":\"FindDate\",\"date\":{\"equals\":\"" + Crawljson.StartDate + "\"}},{\"property\":\"FindDate\",\"date\":{\"equals\":\"" + Crawljson.EndDate + "\"}},{\"and\":[{\"property\":\"FindDate\",\"date\":{\"after\":\"" + Crawljson.StartDate + "\"}},{\"property\":\"FindDate\",\"date\":{\"before\":\"" + Crawljson.EndDate + "\"}}]}]}}")
 
-	req, reqerr := http.NewRequest("POST", url, nil)
+	req, reqerr := http.NewRequest("POST", url, payload)
 	if reqerr != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
@@ -78,8 +81,31 @@ func SaveDB(c *gin.Context) {
 	}
 
 	length := len(data["results"].([]interface{}))
-	startTime, _ := time.Parse("2006-01-02", Crawljson.StartDate)
-	EndTime, _ := time.Parse("2006-01-02", Crawljson.EndDate)
+	if length == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Unable to get pages.",
+		})
+		return
+	}
+	enverr := godotenv.Load(".env")
+
+	if enverr != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	dbip := os.Getenv("DBIP")
+	dbport := os.Getenv("DBPORT")
+	dbid := os.Getenv("DBID")
+	dbpassword := os.Getenv("DBPASSWORD")
+	dbschema := os.Getenv("DBSCHEMA")
+
+	db, dberr := sql.Open("mysql", dbid+":"+dbpassword+"@tcp("+dbip+":"+dbport+")/"+dbschema)
+	if dberr != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
 
 	for i := 0; i < length; i++ {
 		titledata, titlecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})
@@ -108,13 +134,7 @@ func SaveDB(c *gin.Context) {
 			sqltargetdata = targetdata["name"].(string)
 		}
 
-		dataDate, _ := time.Parse("2006-01-02", datedata["start"].(string))
-
-		if startTime.After(dataDate) || EndTime.Before(dataDate) {
-			continue
-		} else {
-			sqldatedata = datedata["start"].(string)
-		}
+		sqldatedata = datedata["start"].(string)
 
 		if len(titledata) == 0 {
 			continue
@@ -135,7 +155,7 @@ func SaveDB(c *gin.Context) {
 
 		pageapireq, pageapireqdoerr := http.NewRequest("GET", pageapiurl, nil)
 		if pageapireqdoerr != nil {
-			c.JSON(http.StatusInternalServerError, nil)
+			c.Status(http.StatusInternalServerError)
 			return
 		}
 
@@ -185,6 +205,7 @@ func SaveDB(c *gin.Context) {
 
 			if pagedata[0].(map[string]interface{})["plain_text"].(string) == "참고 자료" {
 				referencebool = true
+				continue
 			}
 
 			if !referencebool {
@@ -193,91 +214,19 @@ func SaveDB(c *gin.Context) {
 				sqlreference += pagedata[0].(map[string]interface{})["plain_text"].(string) + "\n"
 			}
 		}
-		// [TODO] : sql 서버 쿼리 작업
-		db, dberr := sql.Open("mysql", "")
-		if dberr != nil {
+
+		var execerr error
+		if string(sqltypedata[0]) != "V" {
+			_, execerr = db.Exec("INSERT INTO report (id, title, type, vulnerability, date, target, human, description, reference) values (0, ?, ?, ?, ?, ?, ?, ?, ?)", sqltitledata, string(sqltypedata[0]), nil, sqldatedata, sqltargetdata, sqlhumandata, sqldescription, sqlreference)
+		} else {
+			_, execerr = db.Exec("INSERT INTO report (id, title, type, vulnerability, date, target, human, description, reference) values (0, ?, ?, ?, ?, ?, ?, ?, ?)", sqltitledata, string(sqltypedata[0]), sqlvulnerabilitydata, sqldatedata, sqltargetdata, sqlhumandata, sqldescription, sqlreference)
+		}
+
+		if execerr != nil {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		defer db.Close()
 	}
 
 	c.Status(http.StatusOK)
 }
-
-/*
-	if !(targetnamecheck && titlecheck && datecheck && humannamecheck && typecheck) {
-			continue
-		}
-
-		if Crawljson.Target != targetdata["name"].(string) {
-			continue
-		} else {
-			sqltargetdata = targetdata["name"].(string)
-		}
-
-		dataDate, _ := time.Parse("2006-01-02", datedata["start"].(string))
-
-		if startTime.After(dataDate) || EndTime.Before(dataDate) {
-			continue
-		} else {
-			sqldatedata = datedata["start"].(string)
-		}
-
-		if typedata["name"].(string) == "Vulnability" {
-
-			if vulnerabilitycheck {
-				sqlvulnerabilitydata = vulnerabilitydata
-			}
-		}
-
-		if sqltargetdata != "" && sqldatedata != "" && sqlvulnerabilitydata != "" {
-			continue
-		}
-
-		if len(titledata) == 0 {
-			titledata = nil
-		}
-
-		if len(humandata) == 0 {
-			humandata = nil
-		}
-*/
-
-/*
-	targetdata, targetnamecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Target"].(map[string]interface{})["select"].(map[string]interface{})
-	titledata, plaintextcheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Title"].(map[string]interface{})["title"].([]interface{})
-	datedata, startcheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["FindDate"].(map[string]interface{})["date"].(map[string]interface{})
-	humandata, humannamecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Human"].(map[string]interface{})["people"].([]interface{})
-	typedata, typecheck := data["results"].([]interface{})[i].(map[string]interface{})["properties"].(map[string]interface{})["Type"].(map[string]interface{})["select"].(map[string]interface{})
-
-	if !(targetnamecheck && plaintextcheck && startcheck && humannamecheck) {
-		continue
-	}
-
-	if Crawljson.Target != targetdata["name"].(string) {
-		continue
-	}
-
-	dataDate, _ := time.Parse("2006-01-02", datedata["start"].(string))
-
-	if startTime.After(dataDate) || EndTime.Before(dataDate) {
-		continue
-	} else {
-		resultdata["date"] = datedata["start"].(string)
-	}
-
-	if len(titledata) == 0 {
-		resultdata["title"] = nil
-	} else {
-		resultdata["title"] = titledata[0].(map[string]interface{})["plain_text"].(string)
-	}
-
-	if len(humandata) == 0 {
-		resultdata["human"] = nil
-	} else {
-		resultdata["human"] = humandata[0].(map[string]interface{})["name"].(string)
-	}
-
-	result = append(result, resultdata)
-*/

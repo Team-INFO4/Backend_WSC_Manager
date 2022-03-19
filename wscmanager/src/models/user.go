@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
+	"wscmanager.com/utils/token"
 )
 
 type User struct {
@@ -32,4 +33,31 @@ func (u *User) BeforeSave() error {
 	u.Id = html.EscapeString(u.Id)
 	u.Password = string(hashedPassword)
 	return nil
+}
+
+func VerifyPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func LoginCheck(id string, password string) (string, error) {
+	var err error
+
+	u := User{}
+	err = DB.Model(User{}).Where("Id = ?", id).Take(&u).Error
+
+	if err != nil {
+		return "", err
+	}
+
+	err = VerifyPassword(u.Password, password)
+
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		return "", err
+	}
+
+	token, err := token.CreateJWT(u.Id)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

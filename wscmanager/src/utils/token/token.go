@@ -47,6 +47,7 @@ func VerifyToken(c *gin.Context) (*jwt.Token, error) {
 	}
 	return token, nil
 }
+
 func TokenValid(c *gin.Context) (string, error) {
 	token, err := VerifyToken(c)
 	if err != nil {

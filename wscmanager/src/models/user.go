@@ -1,6 +1,7 @@
 package wsc_models
 
 import (
+	"errors"
 	"html"
 
 	_ "github.com/jinzhu/gorm"
@@ -12,6 +13,18 @@ type User struct {
 	//gorm.Model
 	Id       string `gorm:"size:50;not null;unique"`
 	Password string `gorm:"size:255;not null"`
+}
+
+func GetUserByID(id string) (User, error) {
+	var u User
+
+	if err := DB.First(&u, id).Error; err != nil {
+		return u, errors.New("User not found!")
+	}
+
+	u.Password = ""
+
+	return u, nil
 }
 
 func (u *User) SaveUser() (*User, error) {

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	wsc_models "wscmanager.com/models"
 	"wscmanager.com/utils/token"
 )
 
@@ -18,9 +19,15 @@ func Middleware() gin.HandlerFunc {
 
 func JwtAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		_, err := token.TokenValid(c)
+		id, err := token.TokenValid(c)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{})
+			c.JSON(http.StatusUnauthorized, gin.H{"message": err})
+			c.Abort()
+			return
+		}
+		_, err = wsc_models.GetUserByID(id)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "incorrect content token"})
 			c.Abort()
 			return
 		}

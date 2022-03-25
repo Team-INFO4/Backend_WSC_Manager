@@ -18,7 +18,7 @@ type User struct {
 func GetUserByID(id string) (User, error) {
 	var u User
 
-	if err := DB.First(&u, id).Error; err != nil {
+	if err := DB.Where("id = ?", id).First(&u).Error; err != nil {
 		return u, errors.New("User not found!")
 	}
 

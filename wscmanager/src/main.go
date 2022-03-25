@@ -21,11 +21,8 @@ func main() {
 	engine := gin.Default()
 	wsc_models.ConnectDB()
 
-	data := engine.Group("/api/data")
-	engine.Use(wsc_middleware.Middleware())      // 미들웨어
-	data.Use(wsc_middleware.JwtAuthMiddleware()) // /api/datt/[] 미들웨어
-	wsc_apis.APIs(engine)                        // APIs
-
+	engine.Use(wsc_middleware.Middleware()) // 미들웨어
+	wsc_apis.APIs(engine)                   // APIs
 	engine.Run(":65530")
 
 	defer wsc_models.DB.Close()

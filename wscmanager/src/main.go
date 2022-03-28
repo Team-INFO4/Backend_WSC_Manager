@@ -20,9 +20,9 @@ func main() {
 
 	engine := gin.Default()
 	wsc_models.ConnectDB()
+
 	engine.Use(wsc_middleware.Middleware()) // 미들웨어
 	wsc_apis.APIs(engine)                   // APIs
-
 	engine.Run(":65530")
 
 	defer wsc_models.DB.Close()

@@ -35,7 +35,7 @@ func Signup(c *gin.Context) {
 	user.Password = input.Password
 	_, err := user.SaveUser()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Had this id"})
 		return
 	}
 

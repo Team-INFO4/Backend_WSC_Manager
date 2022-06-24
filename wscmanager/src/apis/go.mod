@@ -5,13 +5,15 @@ go 1.17
 <<<<<<< HEAD
 replace (
 	wscmanager.com/jsonstructs v0.0.0 => ../json
+	wscmanager.com/middleware v0.0.0 => ../middleware
 	wscmanager.com/models v0.0.0 => ../models
+	wscmanager.com/utils v0.0.0 => ../utils
 )
 
 require (
 	github.com/gin-gonic/gin v1.7.7
-	github.com/joho/godotenv v1.4.0
 	wscmanager.com/jsonstructs v0.0.0
+	wscmanager.com/middleware v0.0.0
 	wscmanager.com/models v0.0.0
 =======
 require (
@@ -23,6 +25,7 @@ require (
 )
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 <<<<<<< HEAD
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -43,6 +46,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	wscmanager.com/utils v0.0.0 // indirect
 )
 =======
 	github.com/go-playground/locales v0.13.0 // indirect
